@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Global Color Palette Variables */
+  --color-primary: #2C7BE5;
+  --color-background: #EAF3FC;
+  --color-navy: #0B3D62;
+  --color-saffron: #FF9933;
+  --color-green: #138808;
+  
+  /* Layout Constraints */
+  --max-radius: 8px;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-navy);
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Custom helper to enforce border-radius limits globally if needed */
+.max-rounded {
+  border-radius: var(--max-radius);
+}
