@@ -1,31 +1,73 @@
-# 🤟 GodSign ISL — Indian Sign Language Accessibility Platform
+# 🏙️ Samadhan — Smart City Issue Intelligence & Resolution Platform
 
-**GodSign ISL** is an end-to-end accessibility platform designed to bridge communication gaps for the Deaf and Hard-of-Hearing community across government public service offices (Police, Health, Transport, Revenue) and citizen touchpoints.
+**Samadhan** is an end-to-end civic intelligence platform designed to bridge the gap between citizens and municipal authorities by transforming complaint reporting into an accountable, automated, and trackable resolution pipeline.
 
-It combines real-time **Socket.IO kiosk-to-officer pairing**, **MediaPipe AI hand landmark recognition**, **gamified ISL learning modules**, and a **Supabase-backed analytics & reporting audit suite**.
+It combines **geospatial duplicate detection**, **AI-assisted issue classification**, **multi-department workflow routing**, **automated SLA escalation**, **public transparency scorecards**, and **citizen verification** into a unified Smart City platform.
 
 ---
 
 ## 🌟 Key Features
 
-### 🏛️ 1. Real-Time Kiosk & Officer Dashboard Pairing
-- **Dual-Screen Communication**: Enables public service officers to communicate with deaf citizens at physical kiosks/tablets in real-time.
-- **Bilingual Phrase Delivery**: Instant transmission of essential phrases (English & Hindi) paired with ISL video demonstrations directly to citizen kiosk screens.
-- **WebSocket Synchronization**: Powered by Socket.IO (`kiosk_join`, `send_to_tablet`, `receive_phrase`, `operator_kiosk_alert`).
+### 📝 1. Smart Citizen Issue Reporting
 
-### 🤖 2. AI-Powered ISL Gesture Recognition
-- **MediaPipe Hands Integration**: Camera-based real-time 21-point hand landmark extraction directly in the browser.
-- **Gesture Verification & Practice**: Practice hand signs for letters (A-E) and government service vocabulary (FIR filing, Hospital emergency, Driving License renewal) with immediate visual feedback.
+- **Map-Based Reporting**: Citizens can pinpoint civic issues directly on an interactive map.
+- **Evidence Uploads**: Citizens can attach images and supporting media to complaints.
+- **Live Tracking**: Users can track issue status and view resolution progress.
+- **Public Issue Visibility**: Civic incidents can be visualized geographically through the public issue map.
 
-### 📚 3. Gamified ISL Learning & Certification
-- **Interactive Lessons**: Step-by-step video instruction, visual sign guides, and interactive camera practice.
-- **Gamification Engine**: Earn XP points, maintain daily streaks, unlock badges, and receive celebratory confetti upon lesson completion.
-- **Downloadable Certificates**: Dynamic PDF certificate generation (`jsPDF` & `html2canvas`) upon course completion.
+---
 
-### 📊 4. Department Analytics & Compliance Audits
-- **Officer & Kiosk Metrics**: Real-time stats on monthly citizen interactions, average department ratings, and popular phrase queries.
-- **Staff Training Roster**: Track officer training progress (Certified, In Progress, Not Started) across police stations, hospitals, RTOs, and revenue centers.
-- **Certification Tiering**: Track government accessibility compliance (Bronze, Silver, Gold thresholds).
+### 📍 2. Geospatial Duplicate Detection
+
+- **Spatial Issue Detection**: Uses PostgreSQL + PostGIS to detect nearby issues.
+- **Duplicate Prevention**: `ST_DWithin` identifies existing issues within a configurable geographic radius.
+- **Temporal Filtering**: Recent complaints are considered when determining whether a new report belongs to an existing issue cluster.
+- **Issue Support System**: Additional citizen reports can support an existing issue instead of creating duplicate departmental tickets.
+
+This reduces duplicate complaints and helps municipal departments focus on the underlying civic problem rather than repeated reports.
+
+---
+
+### 🔀 3. Multi-Department Workflow Routing
+
+Samadhan supports civic problems requiring coordination across multiple departments.
+
+- **Rule-Based Routing**: Issue categories can be associated with multiple departments.
+- **Primary & Supporting Departments**: Departments can receive different operational roles.
+- **DAG-Based Workflows**: Work orders can depend on the completion of other work orders.
+- **Inter-Department Transfers**: Staff can request formal reassignment of work orders with approval and audit tracking.
+- **Parallel & Sequential Execution**: Multiple departments can work simultaneously or follow dependency-based execution.
+
+---
+
+### ⏱️ 4. Automated SLA Tracking & Escalation
+
+- **SLA Policies**: Work orders have acknowledgment and resolution deadlines.
+- **Background Worker**: `pg-boss` periodically checks active work orders for SLA breaches.
+- **Tiered Escalation**: Overdue tasks can move through multiple escalation levels.
+- **Notifications**: Administrators can receive alerts for approaching or breached deadlines.
+- **Grace Periods**: Configurable SLA grace windows prevent premature escalation.
+
+---
+
+### ✅ 5. Transparent Resolution & Citizen Verification
+
+- **Public Transparency Scorecard**: Displays municipal and departmental performance metrics.
+- **Resolution Verification**: Citizens can confirm or dispute resolved issues.
+- **Proof of Resolution**: Resolution evidence can be uploaded before administrative closure.
+- **Reopen Pipeline**: Disputed issues can return to an active workflow for further action.
+- **Audit History**: Important operational changes are recorded through append-only history records.
+
+---
+
+### 🤖 6. AI-Assisted Classification & Visual Verification
+
+Samadhan integrates multimodal AI as an advisory layer for civic operations.
+
+- **Issue Classification**: Citizen descriptions and uploaded images can be analyzed to recommend issue categories.
+- **Priority Suggestions**: AI can assist with urgency and priority assessment.
+- **Visual Verification**: Pre-resolution evidence can be compared against post-resolution proof.
+- **AI Audit Logging**: AI operations can record model information, latency, token usage, and human acceptance or modification.
 
 ---
 
@@ -33,172 +75,47 @@ It combines real-time **Socket.IO kiosk-to-officer pairing**, **MediaPipe AI han
 
 ```text
 ├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma          # Database schema and PostGIS definitions
+│   │   └── migrations/            # Database migration history
 │   ├── src/
-│   │   ├── config/         # Supabase client & environment validation
-│   │   ├── controllers/    # Authentication & API business logic
-│   │   ├── middleware/     # Auth guard, rate limiting, request logging, Zod validation
-│   │   ├── routes/         # Express API routes (/api/auth, /api/services, etc.)
-│   │   ├── scripts/        # Database seed scripts
-│   │   ├── app.js          # Express app configuration & REST routes
-│   │   └── server.js       # HTTP & Socket.IO WebSockets server
-│   ├── .env.example        # Backend environment template
-│   └── package.json        # Backend dependencies & scripts
+│   │   ├── config/                # Environment configuration & validation
+│   │   ├── jobs/                  # Background SLA workers
+│   │   ├── modules/
+│   │   │   ├── ai/                # AI classification & visual verification
+│   │   │   ├── analytics/         # Department analytics
+│   │   │   ├── auth/              # Authentication & sessions
+│   │   │   ├── departments/       # Departments & routing rules
+│   │   │   ├── issues/            # Issue lifecycle & deduplication
+│   │   │   ├── notifications/     # SSE & email notifications
+│   │   │   ├── publicTransparency/# Public transparency metrics
+│   │   │   ├── sla/               # SLA evaluation & escalation
+│   │   │   ├── uploads/           # Cloudinary upload handling
+│   │   │   ├── users/              # User & jurisdiction management
+│   │   │   └── workOrders/         # DAG workflows & transfers
+│   │   ├── shared/                # Middleware, DB client & logging
+│   │   ├── app.ts                 # Express application
+│   │   └── server.ts               # Server entry point
+│   └── package.json
 │
-├── src/
-│   ├── assets/             # Media & graphic assets
-│   ├── components/         # Reusable React components & Protected Routes
-│   ├── context/            # AuthContext & global state management
-│   ├── hooks/              # Custom React hooks (camera, gestures, socket)
-│   ├── pages/              # Application views (Dashboard, Kiosk, Learning, Reports)
-│   │   ├── DashboardPage.jsx       # Officer interaction dashboard
-│   │   ├── KioskIdlePage.jsx       # Kiosk attract screen
-│   │   ├── KioskInteractivePage.jsx# Kiosk real-time citizen screen
-│   │   ├── KioskSelectionPage.jsx  # Department & service selection
-│   │   ├── KioskFeedbackPage.jsx   # Citizen satisfaction rating
-│   │   ├── LandingPage.jsx         # Home portal
-│   │   ├── LearningPage.jsx        # ISL curriculum
-│   │   ├── Practice.jsx            # MediaPipe camera sign practice
-│   │   ├── LearningCompletePage.jsx# Course completion & PDF certificate generator
-│   │   └── ReportsPage.jsx         # Executive analytics & staff rosters
-│   ├── utils/              # MediaPipe draw utilities & sign reference matchers
-│   ├── App.jsx             # React Router structure
-│   └── main.jsx            # App entrypoint
+├── frontend/
+│   ├── src/
+│   │   ├── app/                   # Providers, routes & layouts
+│   │   ├── features/
+│   │   │   ├── admin/             # Administrative dashboards
+│   │   │   ├── ai-assistant/      # AI analysis tools
+│   │   │   ├── auth/              # Login & registration
+│   │   │   ├── civic-map/         # Interactive civic map
+│   │   │   ├── dashboard/         # Citizen dashboard
+│   │   │   ├── issues/            # Issue reporting & tracking
+│   │   │   ├── profile/           # User preferences
+│   │   │   └── transparency/      # Public performance scorecards
+│   │   ├── shared/                # Shared UI components & API client
+│   │   └── main.tsx               # Frontend entry point
+│   └── package.json
 │
-├── supabase/
-│   └── migrations/         # SQL schema & Row Level Security (RLS) policies
-├── index.html              # HTML shell
-├── tailwind.config.js      # Custom theme styling & colors
-└── vite.config.js          # Vite build config
-```
-
----
-
-## 💻 Tech Stack
-
-- **Frontend**: React 19, Vite, Tailwind CSS, MediaPipe Hands (`@mediapipe/hands`), Lucide Icons, Socket.IO Client, Canvas-Confetti, jsPDF, html2canvas
-- **Backend**: Node.js, Express, Socket.IO, Zod Validation, Express Rate Limit, Helmet Security
-- **Database & Storage**: Supabase PostgreSQL, Supabase Auth, Supabase Storage (for ISL video hosting)
-
----
-
-## 🛠️ Prerequisites
-
-- **Node.js**: v18.x or higher
-- **npm**: v9.x or higher
-- **Supabase Account**: (Optional for local mockup fallback, required for live DB persistence)
-
----
-
-## 🚀 Environment Setup & Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Harsh20056/GodSign_ISL.git
-cd GodSign_ISL
-```
-
-### 2. Configure Environment Variables
-
-#### Frontend Configuration (`.env` in root)
-Copy `.env.example` to `.env`:
-```env
-VITE_SUPABASE_URL=https://your-supabase-project.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-VITE_SOCKET_URL=http://localhost:5000
-```
-
-#### Backend Configuration (`backend/.env`)
-Copy `backend/.env.example` to `backend/.env`:
-```env
-PORT=5000
-CLIENT_URL=http://localhost:5173
-SUPABASE_URL=https://your-supabase-project.supabase.co
-SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-SUPABASE_SECRET_KEY=your_supabase_service_role_key
-NODE_ENV=development
-```
-
----
-
-## ⚡ Running the Application
-
-Start both the backend server and frontend development server in separate terminals:
-
-### Terminal 1: Backend Server (Express + Socket.IO)
-```bash
-cd backend
-npm install
-npm run dev
-```
-*The backend server will run on `http://localhost:5000`.*
-
-### Terminal 2: Frontend Client (Vite + React)
-```bash
-# In project root directory
-npm install
-npm run dev
-```
-*The web interface will run on `http://localhost:5173`.*
-
----
-
-## 🔑 Demo Access Credentials
-
-All demo accounts share the standard password: **`password123`**
-
-| Role / Department | Email | Default Password | Access Level & Landing View |
-| :--- | :--- | :--- | :--- |
-| 🚓 **Police Operator** | `police@godsign.gov.in` | `password123` | Police Kiosk Officer Dashboard (`/dashboard`) |
-| 🏥 **Health Operator** | `health@godsign.gov.in` | `password123` | Hospital Kiosk Officer Dashboard (`/dashboard`) |
-| 📜 **Revenue Operator** | `revenue@godsign.gov.in` | `password123` | Revenue Kiosk Officer Dashboard (`/dashboard`) |
-| 🚗 **Transport Operator**| `transport@godsign.gov.in` | `password123` | RTO Kiosk Officer Dashboard (`/dashboard`) |
-| ⚙️ **System Admin** | `admin@godsign.gov.in` | `password123` | Full Admin Access, Reports & Analytics (`/reports`) |
-| 👤 **Citizen User** | `citizen@godsign.gov.in` | `password123` | ISL Learning & Interactive Practice (`/learning`) |
-
-> 💡 **Quick Fill**: You can also click the **Demo Credentials** floating widget on the [`/login`](http://localhost:5173/login) screen to auto-fill any of these credentials with one click.
-
----
-
-## 🔌 Socket.IO Real-time Pairing Protocol
-
-| Event | Direction | Description |
-| :--- | :--- | :--- |
-| `kiosk_join` | Kiosk ➔ Server | Registers tablet with a specific `tabletId` room (e.g. `GS-T-402`) |
-| `send_to_tablet` | Dashboard ➔ Server | Officer sends bilingual phrase & video metadata to target `tabletId` |
-| `receive_phrase` | Server ➔ Kiosk | Delivers phrase payload to citizen tablet display |
-| `kiosk_session_start` | Kiosk ➔ Server | Alerts officer dashboard when citizen starts interactive kiosk session |
-| `new_feedback_received` | Server ➔ Dashboard | Broadcasts citizen feedback rating to officer monitoring view |
-
----
-
-## 📡 REST API Summary
-
-- `GET /api/services` — Fetch government service categories & ISL sign vocabularies
-- `GET /api/lessons` — List ISL training curriculum modules
-- `GET /api/progress` — Fetch user XP points, streak counters, and completed lesson IDs
-- `POST /api/progress/complete-lesson` — Record completed lesson & award XP
-- `POST /api/feedback` — Submit citizen feedback rating and comments
-- `GET /api/reports/summary` — Retrieve aggregated interaction metrics, monthly charts, and staff rosters
-
----
-
-## 🛡️ Security & Quality Standards
-
-- **Row Level Security (RLS)**: Enforced via Supabase for user profiles, progress, and feedback tables.
-- **Input Validation**: Schema verification powered by `zod` for all HTTP request bodies.
-- **Rate Limiting**: Express rate limit protections against brute force authentication and API spamming.
-- **Helmet Security**: HTTP security headers enabled on all backend responses.
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page or submit pull requests.
-
----
-
-## 📄 License
-
-This project is created for **Yuva 6.0 Hackathon**. Distributed under the MIT License.
-#   G o d s i g n  
- 
+├── assets/                         # UI screenshots and project media
+├── docs/                           # Architecture & technical documentation
+├── api-documentation.md            # API reference
+├── database-schema.md              # Database documentation
+└── README.md                       # Project documentation
